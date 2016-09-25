@@ -28,6 +28,8 @@ internal struct _TimetableXPaths: RawRepresentable {
         ".//*[@class='common-list-item row']")
     
     internal static let specializationName = _TimetableXPaths(rawValue: ".//div[@class='col-sm-6']")
+    
+    internal static let admissionYear = _TimetableXPaths(rawValue: ".//div[@class='col-sm-1']//a")
 }
 
 internal extension Searchable {

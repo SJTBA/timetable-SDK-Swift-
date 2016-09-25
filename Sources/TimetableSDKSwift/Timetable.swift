@@ -11,7 +11,7 @@ import Scrape
 
 open class Timetable {
     
-    fileprivate let _url: URL
+    public let url: URL
     internal var _html: String?
     internal var _page: HTMLDocument?
     
@@ -21,7 +21,7 @@ open class Timetable {
                 fetch: Bool = false,
                 recursively: Bool = false) throws {
 
-        _url = url
+        self.url = url
 
         if fetch {
             try self.fetch(recursively: recursively)
@@ -48,17 +48,21 @@ extension Timetable: Fetchable {
     
     open func fetch(recursively: Bool = false) throws {
         
-        try getHTML(for: _url)
+        try getHTML(for: url)
         try parseHTML()
         
         func createSchool(from element: Scrape.XMLElement) throws -> School {
             
             let name = element.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
             
-            let url = (_url.isFileURL ? _url.deletingLastPathComponent() : _url)
+            let schoolURL = (url.isFileURL ? url.deletingLastPathComponent() : url)
                 .appendingPathComponent(element["href"] ?? "")
             
-            return try School(name: name, url: url, fetch: recursively, recursively: recursively)
+            return try School(name: name,
+                              url: schoolURL,
+                              timetable: self,
+                              fetch: recursively,
+                              recursively: recursively)
         }
         
         schools = try _page?.search(byXPath: .schoolRows).map(createSchool)

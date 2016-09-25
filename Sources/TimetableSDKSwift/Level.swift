@@ -9,19 +9,23 @@
 import Foundation
 import Scrape
 
-public struct Level {
+public struct Level: TimetableEntity {
     
     public var name: String
     public var specializations: [Specialization]?
+    public var timetable: Timetable
+    
     internal var _element: Scrape.XMLElement
     
     internal init(name: String,
                   element: Scrape.XMLElement,
+                  timetable: Timetable,
                   fetch: Bool = false,
                   recursively: Bool = false) throws {
         
         self.name = name
         _element = element
+        self.timetable = timetable
         
         if fetch {
             try self.fetch(recursively: recursively)
@@ -41,9 +45,10 @@ extension Level: Fetchable {
                 .trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
             
             return try Specialization(name: name,
-                                  element: element,
-                                  fetch: recursively,
-                                  recursively: recursively)
+                                      element: element,
+                                      timetable: timetable,
+                                      fetch: recursively,
+                                      recursively: recursively)
         }
         
         specializations = try _element

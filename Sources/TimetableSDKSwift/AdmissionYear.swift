@@ -8,15 +8,22 @@
 
 import Foundation
 
-public struct AdmissionYear {
+public struct AdmissionYear: TimetableEntity {
     
-    public var year: Int
+    public var name: String
     public var url: URL
     public var groups: [AcadimicGroup]?
+    public var timetable: Timetable
     
-    internal init(year: Int, url: URL, fetch: Bool, recursively: Bool = false) throws {
-        self.year = year
+    internal init(name: String,
+                  url: URL,
+                  timetable: Timetable,
+                  fetch: Bool,
+                  recursively: Bool = false) throws {
+        
+        self.name = name
         self.url = url
+        self.timetable = timetable
         
         if fetch {
             try self.fetch(recursively: recursively)

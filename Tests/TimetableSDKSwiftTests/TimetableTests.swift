@@ -12,6 +12,13 @@ import TimetableSDKSwift
 
 class TimetableTests: XCTestCase {
     
+    static let allTests = [
+        ("testGetSchools", testGetSchools),
+        ("testGetLevelsForSchool", testGetLevelsForSchool),
+        ("testGetSpecializationsForLevels", testGetSpecializationsForLevels),
+        ("testGetAdmissionYearsForSpecialization", testGetAdmissionYearsForSpecialization)
+    ]
+    
     var timetable: Timetable!
     
     struct Seeds {
@@ -35,6 +42,14 @@ class TimetableTests: XCTestCase {
         static let specializationsForMasters = [
             "Applied Mathematics and Informatics",
             "Fundamental Informatics and Information Technology"
+        ]
+        
+        static let admissionYears = [
+            "2016",
+            "2015",
+            "2014",
+            "2013",
+            "2012",
         ]
     }
     
@@ -91,7 +106,7 @@ class TimetableTests: XCTestCase {
         XCTAssertEqual(expectedLevels, returnedLevels)
     }
     
-    func testSpecializationsForLevels() {
+    func testGetSpecializationsForLevels() {
         
         // Given
         let expectedSpecializationsForBachelors = Seeds.specializationsForBachelors
@@ -103,8 +118,8 @@ class TimetableTests: XCTestCase {
         try? school.fetch(recursively: false)
         var bachelor = school.levels![0]
         var master = school.levels![1]
-        try? bachelor.fetch()
-        try? master.fetch()
+        try? bachelor.fetch(recursively: false)
+        try? master.fetch(recursively: false)
         
         // Then
         XCTAssertNotNil(bachelor.specializations,
@@ -119,5 +134,29 @@ class TimetableTests: XCTestCase {
         // Then
         XCTAssertEqual(expectedSpecializationsForBachelors, returnedSpecializationsForBachelors)
         XCTAssertEqual(expectedSpecializationsForMasters, returnedSpecializationsForMasters)
+    }
+    
+    func testGetAdmissionYearsForSpecialization() {
+        
+        // Given
+        let expectedAdmissionYears = Seeds.admissionYears
+        
+        // When
+        try? timetable.fetch(recursively: false)
+        var school = timetable.schools![2]
+        try? school.fetch(recursively: false)
+        var level = school.levels![0]
+        try? level.fetch(recursively: false)
+        var specialization = level.specializations![1]
+        try? specialization.fetch(recursively: false)
+        
+        // Then
+        XCTAssertNotNil(specialization.years, "The list of years should be initialized after fetching")
+        
+        // When
+        let returnedAdmissionYears = specialization.years!.map { $0.name }
+        
+        // Then
+        XCTAssertEqual(expectedAdmissionYears, returnedAdmissionYears)
     }
 }

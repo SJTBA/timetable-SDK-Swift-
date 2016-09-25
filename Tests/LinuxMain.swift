@@ -7,8 +7,8 @@
 //
 
 import XCTest
-@testable import ScrapeTests
+@testable import TimetableTests
 
 XCTMain([
-
-    ])
+    testCase(TimetableTests.allTests)
+])
