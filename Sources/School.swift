@@ -36,11 +36,14 @@ extension School: Fetchable {
         
         func createLevel(from element: Scrape.XMLElement) -> Level {
             
-            let name = element.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
+            let name = element
+                .element(atXPath: .levelName)?
+                .text?
+                .trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
             
-            return Level(name: name, fetch: recursively, recursively: recursively)
+            return Level(name: name, element: element, fetch: recursively, recursively: recursively)
         }
         
-        levels = _page?.search(byXPath: .levelRows).map(createLevel)
+        levels = _page?.search(byXPath: .levelGroups).map(createLevel)
     }
 }

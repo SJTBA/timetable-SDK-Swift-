@@ -27,6 +27,6 @@ public struct AcadimicGroup {
 extension AcadimicGroup: Fetchable {
     
     public func fetch(recursively: Bool = false) throws {
-        
+        Unimplemented()
     }
 }

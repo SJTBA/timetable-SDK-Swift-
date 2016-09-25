@@ -15,12 +15,6 @@ open class Timetable {
     internal var _html: String?
     internal var _page: HTMLDocument?
     
-    private var _schools: [School]? {
-        return _page?
-            .search(byXPath: .schoolRows)
-            .map { School(name: $0.text ?? "nil", url: _url.appendingPathComponent($0["href"] ?? "")) }
-    }
-    
     open fileprivate(set) var schools: [School]?
     
     public init(url: URL = URL(string: "http://timetable.spbu.ru")!,

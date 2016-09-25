@@ -27,6 +27,6 @@ public struct AdmissionYear {
 extension AdmissionYear: Fetchable {
     
     public func fetch(recursively: Bool = false) throws {
-        
+        Unimplemented()
     }
 }
