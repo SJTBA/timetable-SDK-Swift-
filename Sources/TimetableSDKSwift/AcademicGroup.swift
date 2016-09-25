@@ -13,13 +13,13 @@ public struct AcadimicGroup {
     public var name: String
     public var url: URL
     
-    internal init(name: String, url: URL, fetch: Bool = false, recursively: Bool = false) {
+    internal init(name: String, url: URL, fetch: Bool = false, recursively: Bool = false) throws {
         
         self.name = name
         self.url = url
         
         if fetch {
-            try? self.fetch(recursively: recursively)
+            try self.fetch(recursively: recursively)
         }
     }
 }

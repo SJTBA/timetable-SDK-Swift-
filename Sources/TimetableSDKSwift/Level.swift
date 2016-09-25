@@ -18,13 +18,13 @@ public struct Level {
     internal init(name: String,
                   element: Scrape.XMLElement,
                   fetch: Bool = false,
-                  recursively: Bool = false) {
+                  recursively: Bool = false) throws {
         
         self.name = name
         _element = element
         
         if fetch {
-            try? self.fetch(recursively: recursively)
+            try self.fetch(recursively: recursively)
         }
     }
 }
@@ -33,20 +33,20 @@ extension Level: Fetchable {
     
     public mutating func fetch(recursively: Bool = false) throws {
         
-        func createSpecialization(from element: Scrape.XMLElement) -> Specialization {
+        func createSpecialization(from element: Scrape.XMLElement) throws -> Specialization {
             
             let name = element
                 .element(atXPath: .specializationName)?
                 .text?
                 .trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
             
-            return Specialization(name: name,
+            return try Specialization(name: name,
                                   element: element,
                                   fetch: recursively,
                                   recursively: recursively)
         }
         
-        specializations = _element
+        specializations = try _element
             .search(byXPath: .specializationRows)
             .dropFirst()
             .map(createSpecialization)

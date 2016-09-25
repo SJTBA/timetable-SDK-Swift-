@@ -17,12 +17,12 @@ public struct School: _HTMLRepresentable {
     internal var _html: String?
     internal var _page: HTMLDocument?
     
-    internal init(name: String, url: URL, fetch: Bool = false, recursively: Bool = false) {
+    internal init(name: String, url: URL, fetch: Bool = false, recursively: Bool = false) throws {
         self.name = name
         self.url = url
         
         if fetch {
-            try? self.fetch(recursively: recursively)
+            try self.fetch(recursively: recursively)
         }
     }
 }
@@ -34,16 +34,16 @@ extension School: Fetchable {
         try getHTML(for: url)
         try parseHTML()
         
-        func createLevel(from element: Scrape.XMLElement) -> Level {
+        func createLevel(from element: Scrape.XMLElement) throws -> Level {
             
             let name = element
                 .element(atXPath: .levelName)?
                 .text?
                 .trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
             
-            return Level(name: name, element: element, fetch: recursively, recursively: recursively)
+            return try Level(name: name, element: element, fetch: recursively, recursively: recursively)
         }
         
-        levels = _page?.search(byXPath: .levelGroups).map(createLevel)
+        levels = try _page?.search(byXPath: .levelGroups).map(createLevel)
     }
 }

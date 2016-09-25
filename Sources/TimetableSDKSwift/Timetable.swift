@@ -19,12 +19,12 @@ open class Timetable {
     
     public init(url: URL = URL(string: "http://timetable.spbu.ru")!,
                 fetch: Bool = false,
-                recursively: Bool = false) {
+                recursively: Bool = false) throws {
 
         _url = url
 
         if fetch {
-            try? self.fetch(recursively: recursively)
+            try self.fetch(recursively: recursively)
         }
     }
 }
@@ -51,14 +51,16 @@ extension Timetable: Fetchable {
         try getHTML(for: _url)
         try parseHTML()
         
-        func createSchool(from element: Scrape.XMLElement) -> School {
+        func createSchool(from element: Scrape.XMLElement) throws -> School {
             
             let name = element.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
-            let url = _url.appendingPathComponent(element["href"] ?? "")
             
-            return School(name: name, url: url, fetch: recursively, recursively: recursively)
+            let url = (_url.isFileURL ? _url.deletingLastPathComponent() : _url)
+                .appendingPathComponent(element["href"] ?? "")
+            
+            return try School(name: name, url: url, fetch: recursively, recursively: recursively)
         }
         
-        schools = _page?.search(byXPath: .schoolRows).map(createSchool)
+        schools = try _page?.search(byXPath: .schoolRows).map(createSchool)
     }
 }

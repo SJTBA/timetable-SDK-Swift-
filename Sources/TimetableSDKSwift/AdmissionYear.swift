@@ -14,12 +14,12 @@ public struct AdmissionYear {
     public var url: URL
     public var groups: [AcadimicGroup]?
     
-    internal init(year: Int, url: URL, fetch: Bool, recursively: Bool = false) {
+    internal init(year: Int, url: URL, fetch: Bool, recursively: Bool = false) throws {
         self.year = year
         self.url = url
         
         if fetch {
-            try? self.fetch(recursively: recursively)
+            try self.fetch(recursively: recursively)
         }
     }
 }

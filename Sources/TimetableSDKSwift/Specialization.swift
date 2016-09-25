@@ -18,13 +18,13 @@ public struct Specialization {
     internal init(name: String,
                   element: Scrape.XMLElement,
                   fetch: Bool = false,
-                  recursively: Bool = false) {
+                  recursively: Bool = false) throws {
         
         self.name = name
         _element = element
         
         if fetch {
-            try? self.fetch(recursively: recursively)
+            try self.fetch(recursively: recursively)
         }
     }
 }
