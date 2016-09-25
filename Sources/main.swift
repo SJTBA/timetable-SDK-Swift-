@@ -4,8 +4,17 @@
 import Foundation
 let timetable = Timetable()
 
-try! timetable.fetch()
+try! timetable.fetch(recursively: true)
 
-for (name, url) in timetable.faculties! {
-    print("Факультет: \(name)\nCтраница: \(url.absoluteString)\n")
+for school in timetable.schools! {
+    
+    print("Faculty: \(school.name)\nPage: \(school.url.absoluteString)\n")
+    
+    print("Levels:\n")
+    
+    for level in school.levels! {
+        print(level.name)
+    }
+    
+    print("\n\n")
 }

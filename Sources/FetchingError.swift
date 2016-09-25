@@ -10,5 +10,5 @@ import Foundation
 
 public enum FetchingError: Error {
     case parseError
-    case networkingError
+    case networkingError(NSError)
 }

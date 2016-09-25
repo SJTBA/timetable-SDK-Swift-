@@ -11,38 +11,60 @@ import Scrape
 
 open class Timetable {
     
-    private let _mainURL: URL
-    private var _mainHTML: String?
-    private var _mainPage: HTMLDocument?
+    fileprivate let _url: URL
+    internal var _html: String?
+    internal var _page: HTMLDocument?
     
-    public init(url: URL = URL(string: "http://timetable.spbu.ru")!) {
-        _mainURL = url
+    private var _schools: [School]? {
+        return _page?
+            .search(byXPath: .schoolRows)
+            .map { School(name: $0.text ?? "nil", url: _url.appendingPathComponent($0["href"] ?? "")) }
     }
     
-    private func getHTML(for url: URL) throws {
-        _mainHTML = try String(contentsOf: url, encoding: .utf8)
+    open fileprivate(set) var schools: [School]?
+    
+    public init(url: URL = URL(string: "http://timetable.spbu.ru")!,
+                fetch: Bool = false,
+                recursively: Bool = false) {
+
+        _url = url
+
+        if fetch {
+            try? self.fetch(recursively: recursively)
+        }
     }
+}
+
+extension Timetable: _HTMLRepresentable {
+    
+    // Workaround for https://bugs.swift.org/browse/SR-142
+    internal func getHTML(for url: URL) throws {
+        var _self: _HTMLRepresentable = self
+        try _self.getHTML(for: url)
+    }
+    
+    // Workaround for https://bugs.swift.org/browse/SR-142
+    internal func parseHTML() throws {
+        var _self: _HTMLRepresentable = self
+        try _self.parseHTML()
+    }
+}
+
+extension Timetable: Fetchable {
     
     open func fetch(recursively: Bool = false) throws {
         
-        try getHTML(for: _mainURL)
+        try getHTML(for: _url)
+        try parseHTML()
         
-        if let document = HTMLDocument(html: _mainHTML!, encoding: .utf8) {
-            _mainPage = document
-        } else {
-            throw FetchingError.parseError
+        func createSchool(from element: Scrape.XMLElement) -> School {
+            
+            let name = element.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "null"
+            let url = _url.appendingPathComponent(element["href"] ?? "")
+            
+            return School(name: name, url: url, fetch: recursively, recursively: recursively)
         }
-    }
-    
-    
-    
-    private lazy var _faculties: [(name: String, url: URL)]? = {
-        return self._mainPage?
-            .search(byXPath: .facultyRows)
-            .map { (name: $0.text ?? "nil", url: self._mainURL.appendingPathComponent($0["href"] ?? "")) }
-    }()
-    
-    open var faculties: [(name: String, url: URL)]? {
-        return _faculties
+        
+        schools = _page?.search(byXPath: .schoolRows).map(createSchool)
     }
 }
