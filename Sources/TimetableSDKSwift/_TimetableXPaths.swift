@@ -30,6 +30,12 @@ internal struct _TimetableXPaths: RawRepresentable {
     internal static let specializationName = _TimetableXPaths(rawValue: ".//div[@class='col-sm-6']")
     
     internal static let admissionYear = _TimetableXPaths(rawValue: ".//div[@class='col-sm-1']//a")
+    
+    internal static let groupRows = _TimetableXPaths(rawValue: "//*[@id='studentGroupsForCurrentYear']/li")
+    
+    internal static let groupURL = _TimetableXPaths(rawValue: ".//*[@class='tile']")
+    
+    internal static let groupName = _TimetableXPaths(rawValue: ".//*[@class='col-sm-4']")
 }
 
 internal extension Searchable {

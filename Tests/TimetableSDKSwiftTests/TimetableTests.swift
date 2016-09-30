@@ -16,7 +16,8 @@ class TimetableTests: XCTestCase {
         ("testGetSchools", testGetSchools),
         ("testGetLevelsForSchool", testGetLevelsForSchool),
         ("testGetSpecializationsForLevels", testGetSpecializationsForLevels),
-        ("testGetAdmissionYearsForSpecialization", testGetAdmissionYearsForSpecialization)
+        ("testGetAdmissionYearsForSpecialization", testGetAdmissionYearsForSpecialization),
+        ("testGetGroupsForAdmissionYear", testGetGroupsForAdmissionYear)
     ]
     
     var timetable: Timetable!
@@ -50,6 +51,11 @@ class TimetableTests: XCTestCase {
             "2014",
             "2013",
             "2012",
+        ]
+        
+        static let groups = [
+            "101",
+            "102"
         ]
     }
     
@@ -158,5 +164,31 @@ class TimetableTests: XCTestCase {
         
         // Then
         XCTAssertEqual(expectedAdmissionYears, returnedAdmissionYears)
+    }
+    
+    func testGetGroupsForAdmissionYear() {
+        
+        // Given
+        let expectedGroups = Seeds.groups
+        
+        // When
+        try? timetable.fetch(recursively: false)
+        var school = timetable.schools![2]
+        try? school.fetch(recursively: false)
+        var level = school.levels![0]
+        try? level.fetch(recursively: false)
+        var specialization = level.specializations![0]
+        try? specialization.fetch(recursively: false)
+        var year = specialization.years![0]
+        try? year.fetch(recursively: false)
+        
+        // Then
+        XCTAssertNotNil(year.groups, "The list of groups should be initialized after fetching")
+        
+        // When
+        let returnedGroups = year.groups!.map { $0.name }
+        
+        // Then
+        XCTAssertEqual(expectedGroups, returnedGroups)
     }
 }

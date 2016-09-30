@@ -36,6 +36,13 @@ for var school in timetable.schools ?? [] {
             for var year in specialization.years ?? [] {
                 
                 print("|   |   |-- " + year.name)
+                
+                try? year.fetch()
+                
+                for var group in year.groups ?? [] {
+                    
+                    print("|   |   |   |-- " + group.name)
+                }
             }
         }
     }
